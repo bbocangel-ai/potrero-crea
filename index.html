@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Potrero · CREA 2026</title>
+<meta name="description" content="Potrero — Tu campo, tus números. Presentación para grupo CREA.">
+<link rel="icon" href="assets/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#1E4230;
+  --green-d:#16301F;
+  --green-l:#27543C;
+  --gold:#C9A660;
+  --cream:#F1E5C8;
+  --sage:#AAC0AF;
+  --mist:#D8E1D9;
+  --ok:#62A778;
+  --serif:'Playfair Display', Georgia, serif;
+  --sans:'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, Consolas, monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--green-d);color:var(--cream);
+  font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased;
+}
+img{display:block;max-width:100%}
+
+/* ---------- escenario 1600x900 escalado ---------- */
+#deck{position:fixed;inset:0;display:grid;place-items:center}
+#stage{
+  width:1600px;height:900px;position:relative;flex:none;
+  transform:scale(var(--k,1));transform-origin:center center;
+  background:var(--green);overflow:hidden;
+  box-shadow:0 40px 100px -30px rgba(0,0,0,.7);
+}
+.slide{
+  position:absolute;inset:0;padding:64px 72px;
+  opacity:0;visibility:hidden;
+  transition:opacity .38s ease, visibility .38s;
+}
+.slide.on{opacity:1;visibility:visible}
+/* trama fina de fondo, igual que la marca */
+.slide::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(to right, rgba(201,166,96,.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(201,166,96,.07) 1px, transparent 1px);
+  background-size:80px 80px;
+  -webkit-mask-image:linear-gradient(to bottom, rgba(0,0,0,.85), transparent 88%);
+  mask-image:linear-gradient(to bottom, rgba(0,0,0,.85), transparent 88%);
+}
+.slide > *{position:relative;z-index:1}
+
+/* ---------- tipografía ---------- */
+.eyebrow{
+  font-size:13px;font-weight:600;letter-spacing:.19em;text-transform:uppercase;
+  color:var(--gold);margin:0 0 20px;
+}
+h1,h2,h3{font-family:var(--serif);font-weight:600;margin:0;line-height:1.08;letter-spacing:-.01em}
+h1{font-size:78px}
+h2{font-size:45px;color:var(--cream)}
+h2 .soft{color:var(--sage);font-style:italic;font-weight:500}
+.it{font-style:italic;color:var(--gold)}
+.sub{font-size:19px;color:var(--sage);margin:18px 0 0;max-width:60ch;line-height:1.5}
+.rule{height:1px;background:linear-gradient(to right,var(--gold),rgba(201,166,96,.08));border:0;margin:26px 0}
+.kicker{
+  display:inline-block;font-size:15px;color:var(--mist);
+  border-left:2px solid var(--gold);padding-left:14px;line-height:1.45;
+}
+
+/* ---------- marca ---------- */
+.brand{display:flex;align-items:center;gap:14px}
+.brand img{width:44px;height:44px;border-radius:6px}
+.brand b{font-family:var(--serif);font-size:29px;font-weight:600;display:block;line-height:1}
+.brand span{font-size:13px;color:var(--gold);letter-spacing:.04em}
+
+/* ---------- grillas y tarjetas ---------- */
+.row{display:grid;gap:26px}
+.c2{grid-template-columns:1fr 1fr}
+.c3{grid-template-columns:repeat(3,1fr)}
+.c4{grid-template-columns:repeat(4,1fr)}
+.split{display:grid;grid-template-columns:var(--sp,1fr 1.15fr);gap:52px;align-items:start}
+/* el epígrafe queda arriba y el bloque principal se centra en el alto restante:
+   el aire sobrante se reparte parejo en vez de acumularse abajo */
+.slide.v{display:flex;flex-direction:column}
+.slide.v > .split{margin:auto 0}
+
+.card{border-top:1px solid rgba(201,166,96,.42);padding-top:18px}
+.card .n{font-family:var(--serif);font-size:20px;color:var(--gold);display:block;margin-bottom:10px;line-height:1}
+.card h3{font-size:22px;color:var(--cream);margin-bottom:9px;line-height:1.2}
+.card p{margin:0;font-size:14.5px;color:var(--sage);line-height:1.5}
+
+/* panel alto: ocupa el alto de la diapositiva en vez de dejar un vacío abajo */
+.panel{
+  height:452px;display:flex;flex-direction:column;justify-content:space-between;
+  padding:32px 30px;background:rgba(255,255,255,.032);
+  border:1px solid rgba(201,166,96,.2);border-top:2px solid var(--gold);
+}
+.panel .n{font-family:var(--serif);font-size:46px;color:var(--gold);line-height:1}
+.panel h3{font-size:29px;color:var(--cream);margin-bottom:14px;line-height:1.15}
+.panel p{margin:0;font-size:16px;color:var(--sage);line-height:1.55}
+
+/* tarjeta compacta etiqueta/valor */
+.tile{background:rgba(255,255,255,.035);border:1px solid rgba(201,166,96,.22);border-radius:3px;padding:15px 17px}
+.tile u{display:block;text-decoration:none;font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);margin-bottom:7px}
+.tile b{display:block;font-family:var(--serif);font-size:25px;font-weight:600;color:var(--cream);line-height:1.1}
+.tile b.sm{font-size:20px}
+.tile b.ok{color:var(--ok)}
+.tile i{display:block;font-style:normal;font-size:12.5px;color:var(--sage);margin-top:6px}
+
+/* lista con flechas */
+.arrows{list-style:none;margin:0;padding:0;display:grid;gap:11px}
+.arrows li{display:flex;gap:12px;font-size:15px;color:var(--mist);line-height:1.35}
+.arrows li::before{content:"→";color:var(--gold);flex:none;font-size:15px}
+
+/* marco de captura */
+.shot{
+  border:1px solid rgba(201,166,96,.34);border-radius:4px;overflow:hidden;
+  background:#fff;box-shadow:0 22px 50px -22px rgba(0,0,0,.8);
+}
+.shot img{width:100%}
+.shot.crop{position:relative}
+.shot.crop img{object-fit:cover;object-position:top center;height:100%}
+/* fila de alto fijo: cada captura conserva su proporción y el ancho se acomoda,
+   en vez de deformar o recortar de más una imagen vertical */
+.strip{display:flex;gap:18px;align-items:stretch}
+.strip .shot{height:100%;flex:none}
+.strip .shot img{height:100%;width:auto;max-width:none}
+
+/* pie de slide */
+.foot{
+  position:absolute;left:72px;right:72px;bottom:34px;
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:12px;color:rgba(170,192,175,.65);letter-spacing:.04em;z-index:1;
+}
+
+/* ---------- slide 1 portada ---------- */
+#s1{padding:0;display:grid;grid-template-columns:1.08fr .92fr}
+#s1 .left{padding:64px 60px 64px 72px;display:flex;flex-direction:column;justify-content:space-between}
+#s1 .photo{position:relative;overflow:hidden}
+#s1 .photo img{width:100%;height:100%;object-fit:cover;object-position:center 42%}
+#s1 .photo::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(100deg, var(--green) 0%, rgba(30,66,48,.72) 22%, rgba(30,66,48,.1) 58%, rgba(22,48,31,.42) 100%);
+}
+#s1 h1{font-size:82px}
+#s1 h1 + h1{margin-top:4px}
+
+/* ---------- slide 3 / 11 centradas ---------- */
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center}
+.center h2{font-size:47px;max-width:22ch}
+.center .steps{display:grid;grid-template-columns:repeat(3,240px);gap:0;margin-top:52px}
+.center .steps .card{border-top:0;padding:0 26px;position:relative}
+.center .steps .card + .card{border-left:1px solid rgba(201,166,96,.3)}
+.center .steps .n{font-size:23px}
+
+/* línea de tiempo de la etapa */
+.track{position:relative;width:720px;height:1px;background:rgba(201,166,96,.3);margin:44px 0 0}
+.track i{position:absolute;top:-4px;width:9px;height:9px;border-radius:50%;background:var(--gold);transform:translateX(-50%)}
+.track i:nth-child(1){left:16.6%}
+.track i:nth-child(2){left:50%}
+.track i:nth-child(3){left:83.3%;background:transparent;border:1px solid var(--gold)}
+
+/* ---------- cromo del deck ---------- */
+#bar{position:fixed;left:0;top:0;height:2px;background:var(--gold);width:0;transition:width .38s ease;z-index:40}
+#hud{
+  position:fixed;right:18px;bottom:14px;display:flex;align-items:center;gap:16px;
+  font-family:var(--mono);font-size:12px;color:rgba(241,229,200,.42);z-index:40;
+  user-select:none;
+}
+#hud b{color:rgba(241,229,200,.8);font-weight:500}
+#clock{letter-spacing:.06em}
+#clock.warn{color:var(--gold)}
+#clock.over{color:#E0784F}
+#help{
+  position:fixed;left:18px;bottom:14px;font-size:11.5px;letter-spacing:.05em;
+  color:rgba(241,229,200,.3);z-index:40;font-family:var(--mono);
+  transition:opacity .3s;
+}
+#help.hide{opacity:0}
+.zone{position:fixed;top:0;bottom:0;width:16%;z-index:30;cursor:pointer}
+.zone.prev{left:0}
+.zone.next{right:0}
+
+/* ---------- impresión: respaldo en PDF ---------- */
+@media print{
+  @page{size:1600px 900px;margin:0}
+  body{overflow:visible;background:#fff}
+  #deck{position:static;display:block}
+  #stage{transform:none!important;width:1600px;height:auto;box-shadow:none}
+  .slide{position:relative;opacity:1!important;visibility:visible!important;height:900px;page-break-after:always;break-after:page}
+  #bar,#hud,#help,.zone{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="bar"></div>
+<div class="zone prev" data-nav="-1" title="Anterior"></div>
+<div class="zone next" data-nav="1" title="Siguiente"></div>
+
+<div id="deck">
+<div id="stage">
+
+<!-- ══════════ 1 · PORTADA ══════════ -->
+<section class="slide on" id="s1">
+  <div class="left">
+    <p class="eyebrow" style="margin:0">Potrero · CREA</p>
+    <div>
+      <h1>¿Lo podés ver?</h1>
+      <h1 class="it">¿O tenés que armarlo?</h1>
+      <hr class="rule" style="max-width:420px">
+      <p class="sub" style="font-size:20px;max-width:34ch">
+        Si hoy querés saber cómo viene tu gestión,
+        ¿la respuesta ya está lista?
+      </p>
+    </div>
+    <div class="brand">
+      <img src="assets/logo.png" alt="">
+      <div>
+        <b>Potrero</b>
+        <span>Tu campo, tus números.</span>
+      </div>
+    </div>
+  </div>
+  <div class="photo">
+    <img src="assets/foto-toro.png" alt="Toro nelore en el campo">
+  </div>
+</section>
+
+<!-- ══════════ 2 · EL DESAFÍO ══════════ -->
+<section class="slide" id="s2">
+  <img src="assets/logo.png" alt="" style="position:absolute;right:72px;top:56px;width:66px;opacity:.9;border-radius:8px">
+  <p class="eyebrow">El desafío</p>
+  <h2>La información existe.<br><span class="soft">El problema es verla cuando todavía sirve.</span></h2>
+  <p class="sub">Cuando la respuesta llega al cierre, ya no alcanza para corregir.</p>
+
+  <div class="row c3" style="margin-top:56px">
+    <div class="panel">
+      <span class="n">01</span>
+      <div>
+        <h3>Los datos quedan<br>repartidos</h3>
+        <p>Cuadernos, planillas, WhatsApp, facturas y datos guardados por distintas personas.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <span class="n">02</span>
+      <div>
+        <h3>Encontrar la respuesta<br>lleva tiempo</h3>
+        <p>Hay que revisar archivos, llamar al campo y volver a armar la historia.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <span class="n">03</span>
+      <div>
+        <h3>Las decisiones<br>llegan tarde</h3>
+        <p>Tropas, gastos, carga, lluvias e insumos se analizan cuando ya no se pueden corregir.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 3 · NUESTRA ETAPA ══════════ -->
+<section class="slide" id="s3">
+  <div class="center">
+    <p class="eyebrow">Nuestra etapa</p>
+    <h2>Potrero está funcionando.<br><span class="it">Y todavía tiene mucho por mejorar.</span></h2>
+
+    <div class="track"><i></i><i></i><i></i></div>
+
+    <div class="steps">
+      <div class="card">
+        <span class="n">MVP</span>
+        <h3>Validamos el problema</h3>
+        <p>La información del campo estaba dispersa y llegaba tarde.</p>
+      </div>
+      <div class="card">
+        <span class="n">V1</span>
+        <h3>Versión operativa</h3>
+        <p>Los módulos centrales y las consultas por WhatsApp ya están disponibles.</p>
+      </div>
+      <div class="card">
+        <span class="n">→</span>
+        <h3>Mejora continua</h3>
+        <p>Seguimos desarrollando Potrero a partir del uso real de productores.</p>
+      </div>
+    </div>
+
+    <p class="kicker" style="margin-top:50px;text-align:left">
+      No es un producto terminado: es una versión que ya se usa y mejora con cada campo.
+    </p>
+  </div>
+</section>
+
+<!-- ══════════ 4 · UNA SOLA MIRADA ══════════ -->
+<section class="slide v" id="s4">
+  <p class="eyebrow">Potrero</p>
+  <div class="split" style="--sp:.82fr 1.35fr">
+    <div>
+      <h2>Todo el campo,<br><span class="it">en una sola mirada.</span></h2>
+      <p class="sub" style="font-size:17px">
+        Información productiva y económica, simple de encontrar y rápida de entender.
+      </p>
+
+      <div class="row c2" style="margin-top:36px;gap:16px">
+        <div class="tile"><u>Animales</u><b class="sm">Inventario y kilos</b><i>Tropas · movimientos · GPD</i></div>
+        <div class="tile"><u>Negocio</u><b class="sm">Ingresos y gastos</b><i>Margen · composición · alertas</i></div>
+        <div class="tile"><u>Campo</u><b class="sm">Carga y potreros</b><i>Rotación · superficie · lluvias</i></div>
+        <div class="tile"><u>Operación</u><b class="sm">Insumos al día</b><i>Stock · compras · consumo</i></div>
+      </div>
+
+      <p class="kicker" style="margin-top:34px">
+        La información deja de estar repartida y empieza a conversar.
+      </p>
+    </div>
+
+    <div>
+      <div class="shot"><img src="assets/panel.png" alt="Panel de control de Potrero"></div>
+      <div class="shot" style="width:74%;margin:-46px 0 0 auto;position:relative">
+        <img src="assets/panel2.png" alt="Avance contra las metas de la gestión">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 5 · INVENTARIO ══════════ -->
+<section class="slide v" id="s5">
+  <p class="eyebrow">Inventario</p>
+  <div class="split" style="--sp:.78fr 1.4fr">
+    <div>
+      <h2>Saber cuántos animales<br>y kilos tenés <span class="it">no debería<br>tomar horas.</span></h2>
+      <p class="sub" style="font-size:17px">
+        Inventario, carga animal y tropas, siempre en el mismo lugar.
+      </p>
+
+      <div class="row c2" style="margin-top:34px;gap:16px">
+        <div class="tile"><u>Existencia actual</u><b>456 cab</b><i>inventario oficial</i></div>
+        <div class="tile"><u>Peso vivo</u><b>136.392 kg</b><i>299,1 kg promedio</i></div>
+        <div class="tile"><u>Carga actual</u><b>0,70 UA/ha</b><i>evolución mensual</i></div>
+        <div class="tile"><u>Tropas</u><b>Por lote</b><i>peso y último pesaje</i></div>
+      </div>
+
+      <p class="kicker" style="margin-top:34px">
+        De la existencia total al detalle de cada tropa.
+      </p>
+    </div>
+
+    <div>
+      <div class="shot"><img src="assets/inv1.png" alt="Inventario ganadero en Potrero"></div>
+      <div class="strip" style="height:212px;margin-top:18px">
+        <div class="shot"><img src="assets/inv2.png" alt="Evolución de la carga animal"></div>
+        <div class="shot"><img src="assets/inv3.png" alt="Detalle de tropas por lote"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 6 · GESTIÓN ECONÓMICA ══════════ -->
+<section class="slide v" id="s6">
+  <p class="eyebrow">Gestión económica</p>
+  <div class="split" style="--sp:.82fr 1.35fr">
+    <div>
+      <h2>No se trata solo de<br>cuánto gastaste, <span class="it">sino de<br>entender dónde y por qué.</span></h2>
+      <p class="sub" style="font-size:17px">
+        Ingresos, gastos, margen y costos por categoría o maquinaria.
+      </p>
+
+      <div class="row" style="margin-top:32px;gap:13px">
+        <div class="tile" style="display:flex;align-items:baseline;justify-content:space-between;gap:16px">
+          <span><u>Gastos del ejercicio</u><b class="sm num">Bs 1.012.594</b></span>
+          <i style="margin:0;white-space:nowrap">operativos</i>
+        </div>
+        <div class="tile" style="display:flex;align-items:baseline;justify-content:space-between;gap:16px">
+          <span><u>Ingresos</u><b class="sm num">Bs 4.336.435</b></span>
+          <i style="margin:0;white-space:nowrap">registrados</i>
+        </div>
+        <div class="tile" style="display:flex;align-items:baseline;justify-content:space-between;gap:16px">
+          <span><u>Margen operativo</u><b class="sm ok num">Bs 3.323.841</b></span>
+          <i style="margin:0;white-space:nowrap">ingresos − OPEX</i>
+        </div>
+        <div class="tile" style="display:flex;align-items:baseline;justify-content:space-between;gap:16px">
+          <span><u>Maquinaria</u><b class="sm">Detalle por equipo</b></span>
+          <i style="margin:0;white-space:nowrap">combustible y mantenimiento</i>
+        </div>
+      </div>
+
+      <p class="kicker" style="margin-top:30px;font-size:13.5px">
+        Ejemplo con datos de una gestión real cargada en Potrero.
+      </p>
+    </div>
+
+    <div>
+      <div class="shot"><img src="assets/eco1.png" alt="Resumen económico del ejercicio"></div>
+      <div class="strip" style="height:318px;margin-top:18px">
+        <div class="shot"><img src="assets/eco2.png" alt="Gastos por mes y flujo acumulado"></div>
+        <div class="shot"><img src="assets/eco3.png" alt="Composición de gastos"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 7 · POTREROS ══════════ -->
+<section class="slide v" id="s7">
+  <p class="eyebrow">Potreros</p>
+  <div class="split" style="--sp:.72fr 1.55fr;gap:44px">
+    <div>
+      <h2>El mapa cambia<br><span class="it">la conversación.</span></h2>
+      <p class="sub" style="font-size:17px">
+        Superficie, infraestructura, carga y rotación en un mismo lugar.
+      </p>
+
+      <div class="row c2" style="margin-top:32px;gap:14px">
+        <div class="tile"><u>Superficie</u><b class="sm">Cada potrero</b></div>
+        <div class="tile"><u>Carga</u><b class="sm">UA/ha</b></div>
+        <div class="tile"><u>Rotación</u><b class="sm">Histórico</b></div>
+        <div class="tile"><u>Infraestructura</u><b class="sm">Ubicación</b></div>
+      </div>
+
+      <p class="eyebrow" style="margin:34px 0 14px">Decisiones con contexto</p>
+      <ul class="arrows">
+        <li>Superficie y tipo de pastura</li>
+        <li>Carga animal actual</li>
+        <li>Ocupación y descanso</li>
+        <li>Corrales, aguadas e infraestructura</li>
+      </ul>
+    </div>
+
+    <div class="row" style="grid-template-columns:1.35fr 1fr;gap:22px;align-items:start">
+      <div class="shot"><img src="assets/mapa.png" alt="Mapa de potreros sobre imagen satelital"></div>
+      <div>
+        <div class="shot"><img src="assets/mapa2.png" alt="Detalle e histórico del potrero"></div>
+        <p style="margin:30px 0 0;font-family:var(--serif);font-size:26px;line-height:1.32;color:var(--cream);border-left:2px solid var(--gold);padding-left:18px">
+          El mapa muestra dónde.<br><span class="it">El histórico muestra cuándo.</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 8 · LLUVIA E INSUMOS ══════════ -->
+<section class="slide" id="s8">
+  <p class="eyebrow">Lluvia e insumos</p>
+  <h2>El contexto productivo <span class="it">también tiene que quedar registrado.</span></h2>
+  <p class="sub" style="font-size:17px">Lluvias, stock, compras y movimientos disponibles para decidir.</p>
+
+  <div class="row" style="grid-template-columns:1.42fr 1fr;margin-top:34px;gap:34px">
+    <div>
+      <p class="eyebrow" style="margin-bottom:12px">Pluviometría</p>
+      <div class="shot crop" style="height:400px"><img src="assets/lluvia.png" alt="Registro de lluvias por propiedad"></div>
+    </div>
+    <div>
+      <p class="eyebrow" style="margin-bottom:12px">Insumos</p>
+      <div class="shot"><img src="assets/ins1.png" alt="Resumen de stock de insumos"></div>
+      <div class="shot" style="margin-top:16px"><img src="assets/ins2.png" alt="Movimientos de insumos"></div>
+      <div class="shot" style="margin-top:16px;width:39%"><img src="assets/ins3.png" alt="Detalle de un insumo"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 9 · IA EN WHATSAPP ══════════ -->
+<section class="slide v" id="s9">
+  <p class="eyebrow">IA en WhatsApp</p>
+  <div class="split" style="--sp:.82fr 1.3fr">
+    <div>
+      <h2>Tu campo también<br><span class="it">responde por WhatsApp.</span></h2>
+      <p class="sub" style="font-size:17px">La integración ya está disponible para consultas.</p>
+
+      <div class="row c2" style="margin-top:36px;gap:16px">
+        <div class="tile"><u>Inventario</u><b class="sm">¿Cuántas cabezas?</b><i>por categoría o tropa</i></div>
+        <div class="tile"><u>Movimientos</u><b class="sm">¿Qué pasó hoy?</b><i>ventas · compras · bajas</i></div>
+        <div class="tile"><u>Potreros</u><b class="sm">¿Dónde están?</b><i>distribución y carga</i></div>
+        <div class="tile" style="border-color:rgba(201,166,96,.5)">
+          <u>Siguiente paso</u><b class="sm" style="color:var(--gold)">Ejecutar acciones</b><i>el productor confirma</i>
+        </div>
+      </div>
+
+      <p class="kicker" style="margin-top:36px">
+        Potrero interpreta, el productor confirma y el sistema ejecuta.
+      </p>
+    </div>
+
+    <div class="shot"><img src="assets/whatsapp.png" alt="Consulta a Potrero por WhatsApp"></div>
+  </div>
+</section>
+
+<!-- ══════════ 10 · RADAR DE MERCADO ══════════ -->
+<section class="slide v" id="s10">
+  <p class="eyebrow">Radar de mercado</p>
+  <div class="split" style="--sp:.9fr 1.15fr">
+    <div>
+      <h2>Un dato compartido<br><span class="it">se convierte en referencia.</span></h2>
+      <p class="sub" style="font-size:17px">Prototipo funcional listo para recibir aportes anónimos.</p>
+
+      <div class="row c2" style="margin-top:36px;gap:16px">
+        <div class="tile"><u>Mediana</u><b class="sm">Precio típico</b><i>por categoría</i></div>
+        <div class="tile"><u>Rango</u><b class="sm">Habitual</b><i>50% central</i></div>
+        <div class="tile"><u>Comparación</u><b class="sm">Tu operación</b><i>frente a tu zona</i></div>
+        <div class="tile"><u>Contexto</u><b class="sm">Región y fecha</b><i>peso · desbaste</i></div>
+      </div>
+
+      <p class="kicker" style="margin-top:36px">
+        Ganado, diésel, granos e insumos: mejor contexto para negociar.
+      </p>
+    </div>
+
+    <div class="shot crop" style="height:640px"><img src="assets/feed.jpeg" alt="Feed comunitario con precios de referencia anónimos"></div>
+  </div>
+</section>
+
+<!-- ══════════ 11 · CIERRE ══════════ -->
+<section class="slide" id="s11">
+  <div class="center">
+    <p class="eyebrow">Para cerrar</p>
+    <h2 style="max-width:26ch">¿Qué pregunta de tu campo <span class="it">te gustaría responder en menos de dos minutos?</span></h2>
+
+    <div class="steps" style="margin-top:58px">
+      <div class="card">
+        <span class="n">01</span>
+        <h3>Ver rápido</h3>
+        <p>La información lista cuando la necesitás.</p>
+      </div>
+      <div class="card">
+        <span class="n">02</span>
+        <h3>Entender fácil</h3>
+        <p>Indicadores claros, sin reconstruir la historia.</p>
+      </div>
+      <div class="card">
+        <span class="n">03</span>
+        <h3>Decidir con tiempo</h3>
+        <p>Actuar mientras todavía se puede corregir.</p>
+      </div>
+    </div>
+
+    <div class="brand" style="margin-top:62px;flex-direction:column;gap:12px">
+      <img src="assets/logo.png" alt="" style="width:52px;height:52px">
+      <div style="text-align:center">
+        <b style="font-size:32px">Potrero</b>
+        <span style="display:block;margin-top:4px">Tu campo, tus números.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /stage -->
+</div><!-- /deck -->
+
+<div id="hud"><span id="clock">00:00</span><span><b id="cur">1</b> / <span id="tot">11</span></span></div>
+<div id="help">← →  navegar · F pantalla completa · T reiniciar reloj</div>
+
+<script>
+(function(){
+  var slides = [].slice.call(document.querySelectorAll('.slide'));
+  var i = 0, N = slides.length;
+  var bar = document.getElementById('bar'), cur = document.getElementById('cur');
+  document.getElementById('tot').textContent = N;
+
+  // el escenario mide 1600x900 fijo y se escala para entrar en cualquier pantalla:
+  // así la diapositiva se ve idéntica en el proyector y en el laptop
+  function fit(){
+    var k = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
+    document.getElementById('stage').style.setProperty('--k', k);
+  }
+  window.addEventListener('resize', fit); fit();
+
+  function show(n, push){
+    i = Math.max(0, Math.min(N - 1, n));
+    slides.forEach(function(s, k){ s.classList.toggle('on', k === i) });
+    bar.style.width = ((i + 1) / N * 100) + '%';
+    cur.textContent = i + 1;
+    if (push !== false) history.replaceState(null, '', '#' + (i + 1));
+  }
+  function go(d){ started = true; show(i + d) }
+
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === ' ' || k === 'Enter'){ e.preventDefault(); go(1) }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'Backspace'){ e.preventDefault(); go(-1) }
+    else if (k === 'Home'){ show(0) }
+    else if (k === 'End'){ show(N - 1) }
+    else if (k === 'f' || k === 'F'){
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen();
+    }
+    else if (k === 't' || k === 'T'){ t0 = Date.now(); started = true }
+    else if (k >= '1' && k <= '9'){ show(parseInt(k, 10) - 1) }
+  });
+
+  [].forEach.call(document.querySelectorAll('.zone'), function(z){
+    z.addEventListener('click', function(){ go(+z.dataset.nav) });
+  });
+
+  // reloj: arranca en el primer avance, avisa a los 15 y a los 19 minutos
+  var t0 = null, started = false, clock = document.getElementById('clock');
+  setInterval(function(){
+    if (started && t0 === null) t0 = Date.now();
+    if (t0 === null) return;
+    var s = Math.floor((Date.now() - t0) / 1000);
+    clock.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+    clock.className = s >= 19 * 60 ? 'over' : (s >= 15 * 60 ? 'warn' : '');
+  }, 500);
+
+  // la ayuda se desvanece una vez que ya navegaste
+  var help = document.getElementById('help');
+  setTimeout(function(){ help.classList.add('hide') }, 8000);
+
+  var h = parseInt((location.hash || '').replace('#', ''), 10);
+  show(isNaN(h) ? 0 : h - 1, false);
+})();
+</script>
+</body>
+</html>
