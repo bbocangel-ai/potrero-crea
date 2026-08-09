@@ -1,6 +1,6 @@
-# Potrero · CREA 2026
+# Potrero — Presentación 2026
 
-Presentación de Potrero para grupo CREA, convertida desde
+Presentación de Potrero convertida desde
 `Potrero_CREA_2026.pptx` a una sola página HTML. 11 diapositivas, sin build ni
 dependencias: `index.html` autocontenido más las capturas en `assets/`.
 
