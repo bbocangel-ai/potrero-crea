@@ -89,6 +89,7 @@ h2 .soft{color:var(--sage);font-style:italic;font-weight:500}
 .c2{grid-template-columns:1fr 1fr}
 .c3{grid-template-columns:repeat(3,1fr)}
 .c4{grid-template-columns:repeat(4,1fr)}
+.c5{grid-template-columns:repeat(5,1fr)}
 .split{display:grid;grid-template-columns:var(--sp,1fr 1.15fr);gap:52px;align-items:start}
 /* el epígrafe queda arriba y el bloque principal se centra en el alto restante:
    el aire sobrante se reparte parejo en vez de acumularse abajo */
@@ -109,6 +110,12 @@ h2 .soft{color:var(--sage);font-style:italic;font-weight:500}
 .panel .n{font-family:var(--serif);font-size:46px;color:var(--gold);line-height:1}
 .panel h3{font-size:29px;color:var(--cream);margin-bottom:14px;line-height:1.15}
 .panel p{margin:0;font-size:16px;color:var(--sage);line-height:1.55}
+/* variante angosta: cinco columnas en vez de tres */
+.panel.sm{height:566px;padding:30px 24px}
+.panel.sm .n{font-size:38px}
+.panel.sm h3{font-size:21px;margin-bottom:11px}
+.panel.sm p{font-size:14px;line-height:1.5}
+.panel.sm p b{color:var(--cream);font-weight:600}
 
 /* tarjeta compacta etiqueta/valor */
 .tile{background:rgba(255,255,255,.035);border:1px solid rgba(201,166,96,.22);border-radius:3px;padding:15px 17px}
@@ -156,7 +163,7 @@ h2 .soft{color:var(--sage);font-style:italic;font-weight:500}
 #s1 h1{font-size:82px}
 #s1 h1 + h1{margin-top:4px}
 
-/* ---------- slide 3 / 11 centradas ---------- */
+/* ---------- slides centradas (3 y cierre) ---------- */
 .center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center}
 .center h2{font-size:47px;max-width:22ch}
 .center .steps{display:grid;grid-template-columns:repeat(3,240px);gap:0;margin-top:52px}
@@ -530,8 +537,52 @@ body.portrait #hud{right:10px;bottom:8px;font-size:11px}
   </div>
 </section>
 
-<!-- ══════════ 11 · CIERRE ══════════ -->
+<!-- ══════════ 11 · EL DIFERENCIAL ══════════ -->
 <section class="slide" id="s11">
+  <p class="eyebrow">El diferencial de Potrero</p>
+  <h2>No es solo la plataforma. <span class="it">Es todo lo que viene con ella.</span></h2>
+
+  <div class="row c5" style="margin-top:52px;gap:20px">
+    <div class="panel sm">
+      <span class="n">01</span>
+      <div>
+        <h3>Soporte especializado</h3>
+        <p>Soporte técnico que conoce la herramienta, para que el ganadero no pierda tiempo en el mantenimiento.</p>
+      </div>
+    </div>
+    <div class="panel sm">
+      <span class="n">02</span>
+      <div>
+        <h3>Una sola plataforma</h3>
+        <p>Combinamos la parte productiva, económica y operativa en una misma plataforma integral.</p>
+      </div>
+    </div>
+    <div class="panel sm">
+      <span class="n">03</span>
+      <div>
+        <h3>Onboarding personalizado</h3>
+        <p>Te ayudamos a acomodar tus datos para una carga inicial rápida: en <b>72 horas</b> ves tus números.</p>
+      </div>
+    </div>
+    <div class="panel sm">
+      <span class="n">04</span>
+      <div>
+        <h3>Trazabilidad y gobernanza</h3>
+        <p>Sabés de dónde sale cada número: origen, responsable y respaldo de cada dato.</p>
+      </div>
+    </div>
+    <div class="panel sm">
+      <span class="n">05</span>
+      <div>
+        <h3>Escalabilidad</h3>
+        <p>El sistema acompaña el crecimiento de tu operación. Vivimos en mejora continua.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 12 · CIERRE ══════════ -->
+<section class="slide" id="s12">
   <div class="center">
     <p class="eyebrow">Para cerrar</p>
     <h2 style="max-width:26ch">¿Qué pregunta de tu campo <span class="it">te gustaría responder en menos de dos minutos?</span></h2>

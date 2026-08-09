@@ -1,7 +1,7 @@
 # Potrero — Presentación 2026
 
 Presentación de Potrero convertida desde
-`Potrero_CREA_2026.pptx` a una sola página HTML. 11 diapositivas, sin build ni
+`Potrero_CREA_2026.pptx` a una sola página HTML. 12 diapositivas, sin build ni
 dependencias: `index.html` autocontenido más las capturas en `assets/`.
 
 **Slogan:** Tu campo, tus números.
