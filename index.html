@@ -32,10 +32,14 @@ body{
 img{display:block;max-width:100%}
 
 /* ---------- escenario 1600x900 escalado ---------- */
-#deck{position:fixed;inset:0;display:grid;place-items:center}
+#deck{position:fixed;inset:0;overflow:hidden}
+/* centrado explícito: con `place-items:center` de grid, una caja más ancha que
+   la pantalla se alinea al inicio y en el celular quedaba fuera de cuadro */
 #stage{
-  width:1600px;height:900px;position:relative;flex:none;
-  transform:scale(var(--k,1));transform-origin:center center;
+  width:1600px;height:900px;
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%) scale(var(--k,1));
+  transform-origin:center center;
   background:var(--green);overflow:hidden;
   box-shadow:0 40px 100px -30px rgba(0,0,0,.7);
 }
@@ -129,7 +133,7 @@ h2 .soft{color:var(--sage);font-style:italic;font-weight:500}
 .shot.crop img{object-fit:cover;object-position:top center;height:100%}
 /* fila de alto fijo: cada captura conserva su proporción y el ancho se acomoda,
    en vez de deformar o recortar de más una imagen vertical */
-.strip{display:flex;gap:18px;align-items:stretch}
+.strip{display:flex;gap:18px;align-items:stretch;justify-content:center}
 .strip .shot{height:100%;flex:none}
 .strip .shot img{height:100%;width:auto;max-width:none}
 
@@ -184,6 +188,9 @@ h2 .soft{color:var(--sage);font-style:italic;font-weight:500}
   transition:opacity .3s;
 }
 #help.hide{opacity:0}
+/* con la diapositiva girada, el texto de ayuda queda cruzado: lo sacamos */
+body.portrait #help{display:none}
+body.portrait #hud{right:10px;bottom:8px;font-size:11px}
 .zone{position:fixed;top:0;bottom:0;width:16%;z-index:30;cursor:pointer}
 .zone.prev{left:0}
 .zone.next{right:0}
@@ -322,7 +329,7 @@ h2 .soft{color:var(--sage);font-style:italic;font-weight:500}
 
     <div>
       <div class="shot"><img src="assets/panel.png" alt="Panel de control de Potrero"></div>
-      <div class="shot" style="width:74%;margin:-46px 0 0 auto;position:relative">
+      <div class="shot" style="width:74%;margin:-46px auto 0;position:relative">
         <img src="assets/panel2.png" alt="Avance contra las metas de la gestión">
       </div>
     </div>
@@ -452,13 +459,13 @@ h2 .soft{color:var(--sage);font-style:italic;font-weight:500}
   <div class="row" style="grid-template-columns:1.42fr 1fr;margin-top:34px;gap:34px">
     <div>
       <p class="eyebrow" style="margin-bottom:12px">Pluviometría</p>
-      <div class="shot crop" style="height:400px"><img src="assets/lluvia.png" alt="Registro de lluvias por propiedad"></div>
+      <div class="shot"><img src="assets/lluvia.png" alt="Registro de lluvias por propiedad"></div>
     </div>
     <div>
       <p class="eyebrow" style="margin-bottom:12px">Insumos</p>
       <div class="shot"><img src="assets/ins1.png" alt="Resumen de stock de insumos"></div>
       <div class="shot" style="margin-top:16px"><img src="assets/ins2.png" alt="Movimientos de insumos"></div>
-      <div class="shot" style="margin-top:16px;width:39%"><img src="assets/ins3.png" alt="Detalle de un insumo"></div>
+      <div class="shot" style="margin:16px auto 0;width:39%"><img src="assets/ins3.png" alt="Detalle de un insumo"></div>
     </div>
   </div>
 </section>
@@ -562,10 +569,27 @@ h2 .soft{color:var(--sage);font-style:italic;font-weight:500}
 
   // el escenario mide 1600x900 fijo y se escala para entrar en cualquier pantalla:
   // así la diapositiva se ve idéntica en el proyector y en el laptop
+  // en un celular en vertical, una diapositiva 16:9 entraría como una franja
+  // ilegible: la giramos 90° para que ocupe toda la pantalla. Al girar el
+  // teléfono, el navegador pasa a horizontal y se endereza sola.
   function fit(){
-    var k = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
-    document.getElementById('stage').style.setProperty('--k', k);
+    var vv = window.visualViewport;
+    var vw = (vv && vv.width) || window.innerWidth || document.documentElement.clientWidth;
+    var vh = (vv && vv.height) || window.innerHeight || document.documentElement.clientHeight;
+    // algunos navegadores embebidos (el de WhatsApp, por ejemplo) informan 0 al
+    // cargar: sin esta guarda la escala daba 0 y no se veía nada
+    if (!vw || !vh){ setTimeout(fit, 60); return; }
+    var portrait = vh > vw && vw < 760;
+    var k = portrait ? Math.min(vh / 1600, vw / 900) : Math.min(vw / 1600, vh / 900);
+    document.getElementById('stage').style.transform =
+      'translate(-50%,-50%) rotate(' + (portrait ? 90 : 0) + 'deg) scale(' + k + ')';
+    document.body.classList.toggle('portrait', portrait);
   }
+  window.addEventListener('orientationchange', function(){ setTimeout(fit, 120) });
+  window.addEventListener('load', fit);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', fit);
+  // red de seguridad: si el ancho llega tarde, se reajusta igual
+  [80, 300, 900].forEach(function(ms){ setTimeout(fit, ms) });
   window.addEventListener('resize', fit); fit();
 
   function show(n, push){
@@ -594,6 +618,19 @@ h2 .soft{color:var(--sage);font-style:italic;font-weight:500}
   [].forEach.call(document.querySelectorAll('.zone'), function(z){
     z.addEventListener('click', function(){ go(+z.dataset.nav) });
   });
+
+  // deslizar en el celular. En vertical la diapositiva está girada 90°, así que
+  // el gesto natural pasa a ser vertical: ahí leemos el eje Y.
+  var tx = 0, ty = 0;
+  document.addEventListener('touchstart', function(e){
+    tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+  }, {passive: true});
+  document.addEventListener('touchend', function(e){
+    var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+    var rot = document.body.classList.contains('portrait');
+    var d = rot ? dy : dx;
+    if (Math.abs(d) > 45 && Math.abs(d) > Math.abs(rot ? dx : dy)) go(d < 0 ? 1 : -1);
+  }, {passive: true});
 
   // reloj: arranca en el primer avance, avisa a los 15 y a los 19 minutos
   var t0 = null, started = false, clock = document.getElementById('clock');
